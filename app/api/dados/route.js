@@ -29,3 +29,21 @@ export async function POST(request) {
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    
+    // Busca as últimas 20 leituras para o gráfico
+    const dados = await sql`
+      SELECT id, distancia_cm, data_leitura 
+      FROM leituras_sensor 
+      ORDER BY data_leitura DESC 
+      LIMIT 20
+    `;
+
+    return NextResponse.json(dados);
+  } catch (error) {
+    return NextResponse.json({ error: "Erro ao buscar dados" }, { status: 500 });
+  }
+}
