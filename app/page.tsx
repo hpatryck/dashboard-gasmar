@@ -8,11 +8,11 @@ export default function DashboardGasmar() {
   const [loading, setLoading] = useState(true);
 
   // Função para buscar dados da nossa API
-  const fetchDados = async () => {
+const fetchDados = async () => {
     try {
-      const res = await fetch('/api/dados');
+      // Adicionamos o { cache: 'no-store' } para forçar a atualização
+      const res = await fetch('/api/dados', { cache: 'no-store' }); 
       const json = await res.json();
-      // Inverte a ordem para o gráfico fluir da esquerda para a direita (antigo -> novo)
       setDados(json.reverse());
       setLoading(false);
     } catch (e) {
