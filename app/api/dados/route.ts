@@ -1,36 +1,33 @@
-export const dynamic = 'force-dynamic';
-
 import { neon } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
     const sql = neon(process.env.DATABASE_URL!);
-    const body = await request.json();
-    const { distancia_cm } = body;
-
-    if (distancia_cm === undefined) {
-      return NextResponse.json({ error: 'Dado inválido' }, { status: 400 });
-    }
-
+    const { distancia_cm } = await request.json();
+    // Aqui usamos o nome correto: criado_em (geralmente preenchido pelo DEFAULT do banco)
     await sql`INSERT INTO leituras_sensor (distancia_cm) VALUES (${distancia_cm})`;
     return NextResponse.json({ message: 'Sucesso' }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Erro' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro no POST' }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
     const sql = neon(process.env.DATABASE_URL!);
+    // Ajustado para buscar a coluna 'criado_em'
     const dados = await sql`
-      SELECT id, distancia_cm, data_leitura 
+      SELECT id, distancia_cm, criado_em 
       FROM leituras_sensor 
-      ORDER BY data_leitura DESC 
+      ORDER BY criado_em DESC 
       LIMIT 20
     `;
     return NextResponse.json(dados);
   } catch (error) {
-    return NextResponse.json({ error: "Erro" }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: 'Erro no GET - Verifique as colunas' }, { status: 500 });
   }
 }
