@@ -6,21 +6,20 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const sql = neon(process.env.DATABASE_URL!);
-    const body = await request.json();
-    
-    // Recebendo os dados cruzados do Ultrassom (UT) e do Joystick (Sonda ER)
-    // O seu amigo precisa garantir que o JSON enviado use EXATAMENTE estes nomes
-    const { esp_ut_envio, desg_ut_envio, desg_er_envio } = body;
+    const { esp_ut, desg_ut, desg_er } = await request.json();
 
-    // Inserindo na tabela com as novas colunas
+    if (esp_ut === undefined || desg_ut === undefined || desg_er === undefined) {
+       return NextResponse.json({ error: 'Faltam dados no pacote JSON' }, { status: 400 });
+    }
+
     await sql`
       INSERT INTO leituras_sensor (espessura_mm, desgaste_percentual, desgaste_er_percentual) 
-      VALUES (${esp_ut_envio}, ${desg_ut_envio}, ${desg_er_envio})
+      VALUES (${esp_ut}, ${desg_ut}, ${desg_er})
     `;
     
     return NextResponse.json({ message: 'Sucesso' }, { status: 201 });
   } catch (error) {
-    console.error("Erro no POST:", error);
+    console.error(error);
     return NextResponse.json({ error: 'Erro no POST' }, { status: 500 });
   }
 }
@@ -29,7 +28,6 @@ export async function GET() {
   try {
     const sql = neon(process.env.DATABASE_URL!);
     
-    // Buscando todos os dados necessários para o novo Dashboard
     const dados = await sql`
       SELECT id, espessura_mm, desgaste_percentual, desgaste_er_percentual, criado_em 
       FROM leituras_sensor 
@@ -39,7 +37,7 @@ export async function GET() {
     
     return NextResponse.json(dados);
   } catch (error) {
-    console.error("Erro no GET:", error);
-    return NextResponse.json({ error: 'Erro no GET - Verifique as colunas' }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: 'Erro no GET' }, { status: 500 });
   }
 }
