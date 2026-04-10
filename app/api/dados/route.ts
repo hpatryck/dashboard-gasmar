@@ -10,12 +10,12 @@ export async function POST(request: Request) {
     
     // Recebendo os dados cruzados do Ultrassom (UT) e do Joystick (Sonda ER)
     // O seu amigo precisa garantir que o JSON enviado use EXATAMENTE estes nomes
-    const { esp_ut, desg_ut, desg_er } = body;
+    const { esp_ut_envio, desg_ut_envio, desg_er_envio } = body;
 
     // Inserindo na tabela com as novas colunas
     await sql`
       INSERT INTO leituras_sensor (espessura_mm, desgaste_percentual, desgaste_er_percentual) 
-      VALUES (${esp_ut}, ${desg_ut}, ${desg_er})
+      VALUES (${esp_ut_envio}, ${desg_ut_envio}, ${desg_er_envio})
     `;
     
     return NextResponse.json({ message: 'Sucesso' }, { status: 201 });
