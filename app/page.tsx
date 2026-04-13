@@ -35,6 +35,19 @@ export default function DashboardGasmar() {
   const isErCritico = desgasteER > 80;
   const isErAlerta = desgasteER > 50 && desgasteER <= 80;
 
+// Função para formatar a hora no Eixo X e Tooltip
+  const formatarHora = (valor: any) => {
+    if (!valor) return "";
+    
+    // Tenta converter o que quer que o Recharts mande para uma Data
+    const data = new Date(valor);
+    
+    // Se a conversão falhar (não for uma data válida), retorna o valor original para não quebrar
+    if (isNaN(data.getTime())) return valor; 
+    
+    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-8">
       {/* Cabeçalho */}
@@ -122,9 +135,19 @@ export default function DashboardGasmar() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-              <XAxis dataKey="id" hide />
+              {/* EIXO X ATIVADO AQUI */}
+              <XAxis 
+                dataKey="criado_em" 
+                stroke="#475569" 
+                tickFormatter={formatarHora} 
+                tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                tickMargin={10}
+              />
               <YAxis stroke="#94a3b8" fontSize={12} unit="mm" domain={[0, 14]} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} 
+                labelFormatter={formatarHora}
+              />
               <Area type="monotone" dataKey="espessura_mm" name="Espessura" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorEspec)" animationDuration={500} />
             </AreaChart>
           </ResponsiveContainer>
@@ -136,9 +159,19 @@ export default function DashboardGasmar() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={dados}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-              <XAxis dataKey="id" hide />
+              {/* EIXO X ATIVADO AQUI */}
+              <XAxis 
+                dataKey="criado_em" 
+                stroke="#475569" 
+                tickFormatter={formatarHora} 
+                tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                tickMargin={10}
+              />
               <YAxis stroke="#94a3b8" fontSize={12} unit="%" domain={[0, 100]} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} 
+                labelFormatter={formatarHora}
+              />
               <Legend verticalAlign="top" height={36} wrapperStyle={{ paddingBottom: '20px' }} />
               <Line type="monotone" dataKey="desgaste_percentual" name="Desgaste UT" stroke="#3b82f6" strokeWidth={3} dot={{ r: 3, fill: '#3b82f6' }} animationDuration={500} />
               <Line type="monotone" dataKey="desgaste_er_percentual" name="Desgaste ER" stroke="#f97316" strokeWidth={3} dot={{ r: 3, fill: '#f97316' }} animationDuration={500} />
