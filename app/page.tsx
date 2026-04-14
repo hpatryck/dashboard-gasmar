@@ -174,7 +174,6 @@ export default function DashboardGasmar() {
                   <div className="p-2 bg-rose-50 rounded-lg"><Thermometer className="text-rose-500" size={20} /></div>
                 </div>
                 <p className="text-4xl font-bold text-slate-800 tracking-tight">{temperatura.toFixed(1)} <span className="text-lg font-medium text-slate-400">°C</span></p>
-                <p className="mt-4 text-slate-400 text-sm font-medium">Sensor AHT10</p>
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
@@ -183,7 +182,6 @@ export default function DashboardGasmar() {
                   <div className="p-2 bg-cyan-50 rounded-lg"><Droplets className="text-cyan-500" size={20} /></div>
                 </div>
                 <p className="text-4xl font-bold text-slate-800 tracking-tight">{umidade.toFixed(1)} <span className="text-lg font-medium text-slate-400">%</span></p>
-                <p className="mt-4 text-slate-400 text-sm font-medium">Fator de oxidação</p>
               </div>
             </div>
 
