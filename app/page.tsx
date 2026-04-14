@@ -71,7 +71,7 @@ export default function DashboardGasmar() {
       
       <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${menuAberto ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-          <Image src="/gasmar_logo.jpg" alt="Logo GASMAR" width={100} height={35} className="object-contain" />
+          <Image src="/gasmar_logo.png" alt="Logo GASMAR" width={100} height={35} className="object-contain" />
           <button onClick={() => setMenuAberto(false)} className="text-slate-400 hover:text-blue-900 transition-colors">
             <X size={24} />
           </button>
@@ -98,7 +98,7 @@ export default function DashboardGasmar() {
               <Menu size={28} />
             </button>
             <div className="hidden sm:block">
-              <Image src="/gasmar_logo.jpg" alt="Logo GASMAR" width={140} height={50} className="object-contain" priority />
+              <Image src="/gasmar_logo.png" alt="Logo GASMAR" width={140} height={50} className="object-contain" priority />
             </div>
             <div className="border-l-2 border-slate-200 pl-6 hidden md:block">
               <h1 className="text-2xl font-bold text-blue-900 tracking-tight">
