@@ -6,17 +6,17 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const sql = neon(process.env.DATABASE_URL!);
-    const { esp_ut, desg_ut, desg_er, temp, umid } = await request.json();
+    // 1. Recebendo a nova chave "tensao"
+    const { esp_ut, desg_ut, desg_er, temp, umid, tensao } = await request.json();
 
-    // Trava de segurança principal
     if (esp_ut === undefined || desg_ut === undefined || desg_er === undefined) {
        return NextResponse.json({ error: 'Faltam dados no pacote JSON' }, { status: 400 });
     }
 
-    // Inserindo os 5 dados! (Usamos || 0 caso o AHT10 falhe e mande vazio)
+    // 2. Inserindo a tensão no banco de dados
     await sql`
-      INSERT INTO leituras_sensor (espessura_mm, desgaste_percentual, desgaste_er_percentual, temperatura, umidade) 
-      VALUES (${esp_ut}, ${desg_ut}, ${desg_er}, ${temp || 0}, ${umid || 0})
+      INSERT INTO leituras_sensor (espessura_mm, desgaste_percentual, desgaste_er_percentual, temperatura, umidade, tensao) 
+      VALUES (${esp_ut}, ${desg_ut}, ${desg_er}, ${temp || 0}, ${umid || 0}, ${tensao || 0})
     `;
     
     return NextResponse.json({ message: 'Sucesso' }, { status: 201 });
@@ -30,9 +30,9 @@ export async function GET() {
   try {
     const sql = neon(process.env.DATABASE_URL!);
     
-    // Agora buscamos a temperatura e a umidade também
+    // 3. Buscando a tensão no histórico
     const dados = await sql`
-      SELECT id, espessura_mm, desgaste_percentual, desgaste_er_percentual, temperatura, umidade, criado_em 
+      SELECT id, espessura_mm, desgaste_percentual, desgaste_er_percentual, temperatura, umidade, tensao, criado_em 
       FROM leituras_sensor 
       ORDER BY criado_em DESC 
       LIMIT 20

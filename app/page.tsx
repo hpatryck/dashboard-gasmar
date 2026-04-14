@@ -2,12 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Activity, ShieldAlert, Gauge, AlertTriangle, CheckCircle, Thermometer, Droplets, Database, Menu, X, Home, History, Download, Filter } from 'lucide-react';
+import { Activity, ShieldAlert, Gauge, AlertTriangle, CheckCircle, Thermometer, Droplets, Menu, X, Home, History, Download, Filter, Zap } from 'lucide-react';
 
 export default function DashboardGasmar() {
   const [dados, setDados] = useState<any[]>([]);
   const [menuAberto, setMenuAberto] = useState(false);
-  // NOVO: Estado para controlar qual tela está ativa
   const [telaAtiva, setTelaAtiva] = useState<'dashboard' | 'historico'>('dashboard');
 
   const fetchDados = async () => {
@@ -32,6 +31,8 @@ export default function DashboardGasmar() {
   const desgasteER = atual?.desgaste_er_percentual ?? 0;
   const temperatura = atual?.temperatura ?? 0;
   const umidade = atual?.umidade ?? 0;
+  // NOVO: Extraindo a tensão
+  const tensao = atual?.tensao ?? 0;
 
   const isUtCritico = espessuraUT > 0 && espessuraUT < 4;
   const isUtAlerta = espessuraUT >= 4 && espessuraUT < 6;
@@ -45,7 +46,6 @@ export default function DashboardGasmar() {
     return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
-  // Formatador para o Eixo X do Histórico (Ex: "14/Abr")
   const formatarDataCurta = (valor: any) => {
     if (!valor) return "";
     const data = new Date(valor);
@@ -53,7 +53,6 @@ export default function DashboardGasmar() {
     return data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
   };
 
-  // Função auxiliar para mudar de tela e fechar o menu
   const navegarPara = (tela: 'dashboard' | 'historico') => {
     setTelaAtiva(tela);
     setMenuAberto(false);
@@ -78,17 +77,10 @@ export default function DashboardGasmar() {
           </button>
         </div>
         <nav className="p-4 flex-1 flex flex-col gap-2">
-          {/* Botões do Menu agora possuem ação real */}
-          <button 
-            onClick={() => navegarPara('dashboard')}
-            className={`flex items-center gap-3 w-full p-3 rounded-lg font-medium transition-colors ${telaAtiva === 'dashboard' ? 'bg-blue-50 text-blue-900' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-900'}`}
-          >
+          <button onClick={() => navegarPara('dashboard')} className={`flex items-center gap-3 w-full p-3 rounded-lg font-medium transition-colors ${telaAtiva === 'dashboard' ? 'bg-blue-50 text-blue-900' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-900'}`}>
             <Home size={20} /> Dashboard Principal
           </button>
-          <button 
-            onClick={() => navegarPara('historico')}
-            className={`flex items-center gap-3 w-full p-3 rounded-lg font-medium transition-colors ${telaAtiva === 'historico' ? 'bg-blue-50 text-blue-900' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-900'}`}
-          >
+          <button onClick={() => navegarPara('historico')} className={`flex items-center gap-3 w-full p-3 rounded-lg font-medium transition-colors ${telaAtiva === 'historico' ? 'bg-blue-50 text-blue-900' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-900'}`}>
             <History size={20} /> Histórico Completo
           </button>
         </nav>
@@ -96,17 +88,13 @@ export default function DashboardGasmar() {
           GASMAR Telemetria v2.0
         </div>
       </div>
-      {/* ========================================================== */}
 
       <div className="p-4 md:p-8">
         
-        {/* Cabeçalho Global (Aparece em ambas as telas) */}
+        {/* Cabeçalho Global */}
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <div className="flex items-center gap-6">
-            <button 
-              onClick={() => setMenuAberto(true)}
-              className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 hover:text-blue-900 rounded-lg transition-colors"
-            >
+            <button onClick={() => setMenuAberto(true)} className="p-2 -ml-2 text-slate-500 hover:bg-slate-100 hover:text-blue-900 rounded-lg transition-colors">
               <Menu size={28} />
             </button>
             <div className="hidden sm:block">
@@ -119,19 +107,23 @@ export default function DashboardGasmar() {
               <p className="text-emerald-600 font-medium text-sm">Sistema Híbrido: Transdutor UT + Sonda ER + Clima</p>
             </div>
           </div>
+          
+          {/* Card da Pico W Atualizado (Buffer Removido) */}
           <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-            <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 text-blue-800">
-              <Database size={16} />
-              <span className="text-sm font-semibold">{dados.length} leituras carregadas</span>
-            </div>
-            <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-lg border border-emerald-100 text-emerald-800">
-              <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold">Pico W Online</span>
+            <div className="flex flex-col items-end gap-1 bg-emerald-50 px-5 py-2.5 rounded-lg border border-emerald-100 text-emerald-800">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-bold">Pico W Online</span>
+              </div>
+              <div className="flex items-center gap-1 text-emerald-600">
+                <Zap size={14} />
+                <span className="text-xs font-semibold uppercase tracking-wider">VSYS: {tensao.toFixed(2)}V</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* TELA 1: DASHBOARD PRINCIPAL (Renderizado se telaAtiva === 'dashboard') */}
+        {/* TELA 1: DASHBOARD PRINCIPAL */}
         {telaAtiva === 'dashboard' && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
@@ -197,7 +189,6 @@ export default function DashboardGasmar() {
 
             {/* Gráficos do Dashboard */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {/* Gráfico 1 (Area) */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-[400px]">
                 <h2 className="text-lg font-bold text-blue-900 mb-6">Curva de Redução de Espessura (UT)</h2>
                 <ResponsiveContainer width="100%" height="100%">
@@ -217,7 +208,6 @@ export default function DashboardGasmar() {
                 </ResponsiveContainer>
               </div>
 
-              {/* Gráfico 2 (Linha Correlação) */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-[400px]">
                 <h2 className="text-lg font-bold text-blue-900 mb-6">Correlação Multi-Sonda de Corrosão (%)</h2>
                 <ResponsiveContainer width="100%" height="100%">
@@ -236,10 +226,9 @@ export default function DashboardGasmar() {
           </>
         )}
 
-        {/* TELA 2: HISTÓRICO COMPLETO (Renderizado se telaAtiva === 'historico') */}
+        {/* TELA 2: HISTÓRICO COMPLETO */}
         {telaAtiva === 'historico' && (
           <div className="space-y-6">
-            {/* Barra de Ferramentas do Histórico */}
             <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm gap-4">
               <div className="flex items-center gap-2">
                 <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition-colors">
@@ -251,7 +240,6 @@ export default function DashboardGasmar() {
               </button>
             </div>
 
-            {/* O Gráfico Focado (Inspirado na sua imagem de referência) */}
             <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm h-[600px] flex flex-col">
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-slate-800">Espessura residual — histórico (mm)</h2>
@@ -262,45 +250,10 @@ export default function DashboardGasmar() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={dados} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    
-                    {/* Eixo X: Utilizando a data para simular os meses da imagem */}
-                    <XAxis 
-                      dataKey="criado_em" 
-                      stroke="#94a3b8" 
-                      tickFormatter={formatarDataCurta} 
-                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }} 
-                      tickMargin={16} 
-                    />
-                    
-                    {/* Eixo Y: O SEGREDO DO ZOOM! 
-                        domain={['dataMin - 0.2', 'dataMax + 0.2']} garante que o gráfico
-                        foque exclusivamente na faixa de variação, igual a referência (11.42 a 12.20) */}
-                    <YAxis 
-                      stroke="#94a3b8" 
-                      fontSize={13} 
-                      unit=" mm" 
-                      domain={['dataMin - 0.2', 'dataMax + 0.2']} 
-                      tick={{ fill: '#64748b', fontWeight: 500 }}
-                      tickCount={8}
-                    />
-                    
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
-                      labelFormatter={formatarHora}
-                      itemStyle={{ fontWeight: 600, color: '#003366' }}
-                    />
-                    
-                    {/* A Linha: Estilizada com a cor da GASMAR e bolinhas nos pontos de medição */}
-                    <Line 
-                      type="monotone" 
-                      dataKey="espessura_mm" 
-                      name="Espessura Residual" 
-                      stroke="#003366" 
-                      strokeWidth={4} 
-                      activeDot={{ r: 8, fill: '#003366', stroke: '#fff', strokeWidth: 2 }}
-                      dot={{ r: 4, fill: '#003366', strokeWidth: 0 }} 
-                      animationDuration={1000} 
-                    />
+                    <XAxis dataKey="criado_em" stroke="#94a3b8" tickFormatter={formatarDataCurta} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }} tickMargin={16} />
+                    <YAxis stroke="#94a3b8" fontSize={13} unit=" mm" domain={['dataMin - 0.2', 'dataMax + 0.2']} tick={{ fill: '#64748b', fontWeight: 500 }} tickCount={8} />
+                    <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} labelFormatter={formatarHora} itemStyle={{ fontWeight: 600, color: '#003366' }} />
+                    <Line type="monotone" dataKey="espessura_mm" name="Espessura Residual" stroke="#003366" strokeWidth={4} activeDot={{ r: 8, fill: '#003366', stroke: '#fff', strokeWidth: 2 }} dot={{ r: 4, fill: '#003366', strokeWidth: 0 }} animationDuration={1000} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
