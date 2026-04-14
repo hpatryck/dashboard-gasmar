@@ -170,7 +170,7 @@ export default function DashboardGasmar() {
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
-                  <p className="text-slate-500 font-medium text-sm uppercase tracking-wider">Temp. Ambiente</p>
+                  <p className="text-slate-500 font-medium text-sm uppercase tracking-wider">Temperatura</p>
                   <div className="p-2 bg-rose-50 rounded-lg"><Thermometer className="text-rose-500" size={20} /></div>
                 </div>
                 <p className="text-4xl font-bold text-slate-800 tracking-tight">{temperatura.toFixed(1)} <span className="text-lg font-medium text-slate-400">°C</span></p>
@@ -178,7 +178,7 @@ export default function DashboardGasmar() {
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
-                  <p className="text-slate-500 font-medium text-sm uppercase tracking-wider">Umidade Relativa</p>
+                  <p className="text-slate-500 font-medium text-sm uppercase tracking-wider">Umidade</p>
                   <div className="p-2 bg-cyan-50 rounded-lg"><Droplets className="text-cyan-500" size={20} /></div>
                 </div>
                 <p className="text-4xl font-bold text-slate-800 tracking-tight">{umidade.toFixed(1)} <span className="text-lg font-medium text-slate-400">%</span></p>
